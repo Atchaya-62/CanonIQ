@@ -1,0 +1,20 @@
+{
+  "record_floor": 0.55,
+  "name_only": 0.35,
+  "name_email": 0.60,
+  "name_email_phone": 0.80,
+  "direct_contact_only": 0.55,
+  "github": 0.70,
+  "linkedin": 0.70,
+  "resume": 0.75,
+  "multi_source": 0.95,
+  "source_reliability": {
+    "resume": 0.95,
+    "linkedin": 0.93,
+    "ats": 0.92,
+    "github": 0.88,
+    "csv": 0.90,
+    "json": 0.86,
+    "notes": 0.60
+  }
+}

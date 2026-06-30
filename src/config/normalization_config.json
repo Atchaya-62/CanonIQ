@@ -1,0 +1,29 @@
+{
+  "default_region": "IN",
+  "fallback_region": "IN",
+  "country_aliases": {
+    "united states": "US",
+    "usa": "US",
+    "u.s.a.": "US",
+    "us": "US",
+    "united kingdom": "GB",
+    "uk": "GB",
+    "india": "IN",
+    "spain": "ES",
+    "japan": "JA",
+    "canada": "CA",
+    "germany": "DE",
+    "france": "FR",
+    "australia": "AU"
+  },
+  "city_aliases": {
+    "bangalore": "Bengaluru",
+    "bengaluru": "Bengaluru",
+    "bombay": "Mumbai",
+    "mumbai": "Mumbai",
+    "calcutta": "Kolkata",
+    "kolkata": "Kolkata",
+    "madras": "Chennai",
+    "chennai": "Chennai"
+  }
+}

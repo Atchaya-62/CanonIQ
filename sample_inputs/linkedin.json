@@ -1,0 +1,28 @@
+{
+  "name": "Alice Doe",
+  "headline": "Senior Data Engineer",
+  "email": "alice.doe@example.com",
+  "phone": "+14155550101",
+  "linkedin": "https://www.linkedin.com/in/alicedoe/",
+  "github": "https://github.com/alicedoe",
+  "skills": ["Machine Learning", "Java Script", "Python3"],
+  "experience": [
+    {
+      "company": "Stripe",
+      "title": "Senior Data Engineer",
+      "location": "san francisco, united states",
+      "start_date": "2021-04",
+      "end_date": "2024-05",
+      "current": false
+    }
+  ],
+  "education": [
+    {
+      "school": "University of California",
+      "degree": "BS Computer Science",
+      "start_date": "2014-09",
+      "end_date": "2018-06"
+    }
+  ]
+}
+

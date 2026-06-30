@@ -1,0 +1,7 @@
+Alice Doe
+alice.doe@example.com
++1 415 555 0101
+Experience | Stripe | Data Engineer | San Francisco | 2021-04 | 2024-05
+Education | University of California | BS Computer Science | 2014-09 | 2018-06
+Skills: Python, machine-learning, SQL, Kafka
+

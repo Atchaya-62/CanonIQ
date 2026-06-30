@@ -1,0 +1,13 @@
+{
+  "threshold": 0.85,
+  "email": 1.0,
+  "phone": 0.9,
+  "github": 0.85,
+  "linkedin": 0.85,
+  "name": 0.75,
+  "location": 0.3,
+  "company": 0.4,
+  "skill": 0.25,
+  "education": 0.3,
+  "notes": 0.1
+}

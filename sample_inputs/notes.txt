@@ -1,0 +1,7 @@
+Recruiter notes for Alice Doe
+Strong data engineering background.
+Email alice.doe@example.com
+LinkedIn https://www.linkedin.com/in/alicedoe
+GitHub https://github.com/alicedoe
+Mentions Airflow, DBT and Snowflake.
+

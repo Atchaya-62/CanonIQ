@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eightfold Candidate Transformer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-title">Candidate Transformer</div>
+  </header>
+  <main class="page">
+    <section id="uploadPage" class="card hero page-panel">
+      <div id="dropzone" class="dropzone" tabindex="0">
+        <p class="dropzone-title">Drop Files Here</p>
+        <p class="subtle">or choose a folder or ZIP</p>
+        <div id="selectedFiles" class="selected-files hidden"></div>
+        <div class="picker-row">
+          <label class="picker">
+            <span>Choose Folder</span>
+            <input id="folderInput" type="file" webkitdirectory directory multiple hidden>
+          </label>
+          <label class="picker secondary">
+            <span>Choose File</span>
+            <input id="zipInput" type="file" accept=".zip,.json,.csv,.txt,.pdf" hidden>
+          </label>
+        </div>
+      </div>
+
+      <button id="transformBtn" class="primary-btn transform-outside">Transform</button>
+    </section>
+
+    <section id="resultsPage" class="card output-card page-panel hidden">
+      <div class="card-header">
+        <h2>Transformation Complete</h2>
+        <span id="fileLabel" class="pill">No input selected</span>
+      </div>
+      <div class="result-header">
+        <span class="status ready">✓ Transformation Complete</span>
+      </div>
+      <h3>Output JSON</h3>
+      <pre id="jsonViewer" class="viewer" aria-live="polite">[]</pre>
+    </section>
+
+    <section id="resultsActions" class="action-row page-panel hidden">
+      <button id="downloadJsonBtn" class="secondary-btn" disabled>Download JSON</button>
+      <button id="downloadCsvBtn" class="secondary-btn" disabled>Download CSV</button>
+      <button id="explainBtn" class="secondary-btn" disabled>View Merge Report</button>
+      <button id="backBtn" class="secondary-btn">Back</button>
+    </section>
+
+    <section class="status-row page-panel hidden" id="statusPanel">
+      <span class="status-label">Status</span>
+      <span id="statusText" class="status ready">Ready</span>
+    </section>
+  </main>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+      <h2 id="modalTitle">Merge Report</h2>
+        <button id="closeModalBtn" class="close-btn" aria-label="Close">×</button>
+      </div>
+      <div class="modal-select-row">
+        <label for="candidateSelect">Candidate</label>
+        <select id="candidateSelect"></select>
+      </div>
+      <pre id="explainViewer" class="viewer modal-viewer"></pre>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

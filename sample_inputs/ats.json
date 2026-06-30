@@ -1,0 +1,20 @@
+{
+  "candidates": [
+    {
+      "candidate_name": "Alice Doe",
+      "email": "alice.doe@example.com",
+      "phone": "+1-415-555-0101",
+      "skills": ["python", "sql", "snowflake"],
+      "experience": [
+        {
+          "company": "Stripe",
+          "title": "Data Engineer",
+          "location": "San Francisco, CA",
+          "start_date": "2021-04",
+          "end_date": "2024-05"
+        }
+      ]
+    }
+  ]
+}
+

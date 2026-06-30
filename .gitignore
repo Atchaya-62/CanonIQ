@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+.tmp/
+case5_tmp/
+report_tmp/
+_web_uploads/
+pytest-cache-files-*/
+tmp*/
+web_*/
+validation_report.json
+*.pyc

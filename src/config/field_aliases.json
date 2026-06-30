@@ -1,0 +1,14 @@
+{
+  "full_name": ["name", "candidateName", "candidate_name", "personName", "person_name", "fullName"],
+  "email": ["email", "emailAddress", "mail"],
+  "phone": ["phone", "mobile", "mobileNumber", "phoneNumber", "contact"],
+  "skills": ["skills", "skill", "skillset", "competencies", "skillSet"],
+  "location": ["location", "city", "currentLocation"],
+  "country": ["country", "countryCode"],
+  "headline": ["headline", "title", "summary"],
+  "experience": ["experience", "workExperience", "work_history"],
+  "education": ["education", "educationHistory"],
+  "github": ["github", "githubUrl", "html_url", "url"],
+  "linkedin": ["linkedin", "linkedinUrl"],
+  "website": ["website", "portfolio"]
+}
