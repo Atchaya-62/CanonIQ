@@ -19,6 +19,11 @@ def test_end_to_end_directory_transform():
     assert "Machine Learning" in candidate["all_skills"]
     assert candidate["provenance"]
     assert result.stats["records_processed"] >= 5
+    explanation = next((value for value in result.explanations.values() if isinstance(value, dict) and value.get("field_details")), None)
+    assert explanation is not None
+    assert explanation["merge_details"]
+    assert explanation["field_details"]["name"]["selected_value"] == "Alice Doe"
+    assert explanation["field_details"]["email"]["items"]
 
 
 def test_cli_outputs_json():

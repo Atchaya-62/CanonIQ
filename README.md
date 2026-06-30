@@ -1,4 +1,4 @@
-# Eightfold Candidate Transformer
+# CanonIQ Candidate Transformer
 
 This project turns messy candidate data from multiple sources into one clean, merged candidate profile.
 

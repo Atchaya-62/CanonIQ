@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field, is_dataclass
 import logging
 from os import getenv
 from time import perf_counter
@@ -195,16 +195,49 @@ class CandidateTransformer:
 
     def _build_explanation(self, profile: CandidateProfile, cluster: list[CandidateProfile]) -> dict[str, object]:
         field_selection = self._field_selection(profile)
+        field_details = self._field_details(profile)
         return {
             "candidate": profile.name.value if profile.name and profile.name.value else profile.candidate_id,
-            "merge_summary": f"Merged {len(cluster) or 1} data sources",
+            "merge_summary": self._merge_summary(profile, cluster),
+            "merge_details": list(profile.explanation or []),
+            "merge_decision": profile.extra.get("merge_decision", "merged"),
+            "merge_score": profile.extra.get("merge_score", 0.0),
+            "merge_threshold": profile.extra.get("merge_threshold", 0.0),
+            "cluster_size": len(cluster) or 1,
             "sources_merged": self._cluster_sources(cluster or [profile]),
             "matched_on": self._matched_on(profile),
+            "matching_details": self._matching_details(profile),
             "field_selection": field_selection,
+            "field_details": field_details,
+            "field_conflicts": profile.extra.get("field_conflicts", {}),
+            "field_resolvers": profile.extra.get("field_resolvers", {}),
             "warnings": [self._friendly_message(warning) for warning in profile.warnings],
             "overall_confidence": profile.confidence,
             "confidence_evidence": profile.extra.get("confidence_explanation", {}),
         }
+
+    def _merge_summary(self, profile: CandidateProfile, cluster: list[CandidateProfile]) -> str:
+        lines = [f"Merged {len(cluster) or 1} data sources"]
+        sources = self._cluster_sources(cluster or [profile])
+        if sources:
+            lines.append("Sources: " + ", ".join(sources))
+        matched_on = self._matched_on(profile)
+        if matched_on:
+            lines.append("Matched on: " + "; ".join(matched_on))
+        field_selection = self._field_selection(profile)
+        field_lines = []
+        for field_name in ("name", "email", "phone", "headline", "location", "skills", "experience", "github", "linkedin", "country"):
+            value = field_selection.get(field_name)
+            if value:
+                field_lines.append(f"{field_name}: {value}")
+        if field_lines:
+            lines.append("Field resolution: " + "; ".join(field_lines))
+        confidence = profile.confidence
+        lines.append(f"Overall confidence: {confidence:.0%}")
+        warnings = [self._friendly_message(warning) for warning in profile.warnings]
+        if warnings:
+            lines.append("Warnings: " + "; ".join(warnings))
+        return "\n".join(lines)
 
     def _source_label(self, record) -> str | None:
         if record is None:
@@ -218,10 +251,39 @@ class CandidateTransformer:
             "email": self._best_source_label(profile.emails),
             "phone": self._best_source_label(profile.phones),
             "headline": self._source_label(profile.summary),
+            "country": self._source_label(profile.country),
+            "github": self._source_label(profile.links.get("github")) if profile.links.get("github") else None,
+            "linkedin": self._source_label(profile.links.get("linkedin")) if profile.links.get("linkedin") else None,
             "experience": self._best_sources_label(profile.experience),
             "skills": self._best_sources_label(profile.skills),
             "location": self._best_sources_label(profile.locations),
         }
+
+    def _field_details(self, profile: CandidateProfile) -> dict[str, object]:
+        details: dict[str, object] = {}
+        for field_name, record in (
+            ("name", profile.name),
+            ("headline", profile.summary),
+            ("country", profile.country),
+            ("github", profile.links.get("github")),
+            ("linkedin", profile.links.get("linkedin")),
+        ):
+            detail = self._record_detail(record, field_name) if record else None
+            if detail:
+                details[field_name] = detail
+        for field_name, records in (
+            ("email", profile.emails),
+            ("phone", profile.phones),
+            ("location", profile.locations),
+            ("skills", profile.skills),
+            ("experience", profile.experience),
+            ("education", profile.education),
+            ("notes", profile.notes),
+        ):
+            detail = self._collection_detail(records, field_name)
+            if detail:
+                details[field_name] = detail
+        return details
 
     def _best_source_label(self, records) -> str | None:
         if not records:
@@ -269,20 +331,108 @@ class CandidateTransformer:
     def _matched_on(self, profile: CandidateProfile) -> list[str]:
         matched = []
         if profile.emails:
-            matched.append("Email matched")
+            matched.append(f"Email matched: {self._record_preview(profile.emails[0])}")
         if profile.phones:
-            matched.append("Phone matched")
+            matched.append(f"Phone matched: {self._record_preview(profile.phones[0])}")
         if profile.name and profile.name.value:
-            matched.append("Name matched")
+            matched.append(f"Name matched: {profile.name.value}")
         if profile.locations:
-            matched.append("Location matched")
+            matched.append(f"Location matched: {self._record_preview(profile.locations[0])}")
         if profile.skills:
-            matched.append("Skills overlapped")
+            matched.append(f"Skills overlapped: {', '.join(record.value for record in profile.skills if record.value)}")
         if profile.summary:
-            matched.append("Headline matched")
+            matched.append(f"Headline matched: {profile.summary.value}")
         if profile.experience:
-            matched.append("Experience matched")
+            matched.append(f"Experience matched: {len(profile.experience)} record(s)")
         return matched
+
+    def _to_dict(self, value):
+        if is_dataclass(value):
+            return {key: self._to_dict(item) for key, item in asdict(value).items()}
+        if isinstance(value, list):
+            return [self._to_dict(item) for item in value]
+        if isinstance(value, dict):
+            return {key: self._to_dict(item) for key, item in value.items()}
+        return value
+
+    def _matching_details(self, profile: CandidateProfile) -> list[dict[str, object]]:
+        details: list[dict[str, object]] = []
+        if profile.name and profile.name.value:
+            details.append(self._record_detail(profile.name, "name"))
+        if profile.emails:
+            details.append(self._collection_detail(profile.emails, "email"))
+        if profile.phones:
+            details.append(self._collection_detail(profile.phones, "phone"))
+        if profile.locations:
+            details.append(self._collection_detail(profile.locations, "location"))
+        if profile.skills:
+            details.append(self._collection_detail(profile.skills, "skills"))
+        if profile.summary:
+            details.append(self._record_detail(profile.summary, "headline"))
+        if profile.experience:
+            details.append(self._collection_detail(profile.experience, "experience"))
+        return [detail for detail in details if detail]
+
+    def _collection_detail(self, records, field_name: str) -> dict[str, object] | None:
+        if not records:
+            return None
+        items = [detail for detail in (self._record_detail(record, field_name) for record in records) if detail]
+        if not items:
+            return None
+        selected = items[0]
+        sources = self._unique_labels(item.get("source") for item in items if item.get("source"))
+        return {
+            "selected_value": selected.get("value"),
+            "selected_source": selected.get("source"),
+            "selected_confidence": selected.get("confidence"),
+            "selected_reason": selected.get("reason"),
+            "selected_from": len(items),
+            "sources": sources,
+            "items": items,
+        }
+
+    def _record_detail(self, record, field_name: str) -> dict[str, object] | None:
+        if record is None:
+            return None
+        has_value_field = hasattr(record, "value")
+        value = getattr(record, "value", None)
+        if has_value_field and value in (None, ""):
+            return None
+        detail = self._to_dict(record)
+        source = getattr(record, "source_path", None) or getattr(record, "source", None)
+        detail["source"] = self._source_label(record)
+        detail["source_path"] = source
+        detail["confidence"] = round(float(getattr(record, "confidence", 0.0)), 4)
+        detail["reason"] = getattr(record, "reason", f"selected {field_name}")
+        detail["selected_value"] = self._record_summary(record)
+        return detail
+
+    def _record_summary(self, record) -> object:
+        if record is None:
+            return None
+        value = getattr(record, "value", None)
+        if value not in (None, ""):
+            return self._to_dict(value)
+        parts = [
+            getattr(record, "company", None),
+            getattr(record, "title", None),
+            getattr(record, "institution", None),
+            getattr(record, "degree", None),
+            getattr(record, "field_of_study", None),
+            getattr(record, "location", None),
+        ]
+        summary = " | ".join(part for part in parts if part)
+        if summary:
+            return summary
+        return self._to_dict(record)
+
+    def _record_preview(self, record) -> str:
+        value = getattr(record, "value", None)
+        if value in (None, ""):
+            return "n/a"
+        if isinstance(value, str):
+            return value
+        return str(value)
 
     def _friendly_message(self, warning: str) -> str:
         if "discarded because no candidate identity exists" in warning:

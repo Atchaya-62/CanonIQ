@@ -69,10 +69,10 @@
         <label for="candidateSelect">Candidate</label>
         <select id="candidateSelect"></select>
       </div>
-      <pre id="explainViewer" class="viewer modal-viewer"></pre>
+      <div id="explainViewer" class="viewer modal-viewer report-viewer"></div>
     </div>
   </div>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="{{ url_for('static', filename='script.js', v=asset_version) }}"></script>
 </body>
 </html>

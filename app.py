@@ -4,8 +4,8 @@ import json
 import io
 import shutil
 import zipfile
-from pathlib import Path
 from uuid import uuid4
+from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request, send_file
 from werkzeug.utils import secure_filename
@@ -23,9 +23,17 @@ transformer = CandidateTransformer(ProjectionEngine.from_file(DEFAULT_CONFIG))
 writer = OutputWriter()
 
 
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+
 @app.get("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", asset_version=uuid4().hex)
 
 
 @app.post("/api/transform")
