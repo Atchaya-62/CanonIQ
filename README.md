@@ -286,11 +286,3 @@ Before uploading to Git, keep:
 - `README.md`
 - `.gitignore`
 
-You can remove temp and cache folders like:
-- `.tmp`
-- `case5_tmp`
-- `pytest-cache-files-*`
-- `tmp*`
-- `web_*`
-- `__pycache__`
-- `validation_report.json`
